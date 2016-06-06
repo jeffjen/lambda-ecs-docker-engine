@@ -1,0 +1,57 @@
+#!/bin/bash
+set -e
+
+# Configure runtime PATH
+export PATH=${PWD}/vendor:${PATH}
+
+export MACHINE_USER=ubuntu
+export MACHINE_CERT_FILE=${PWD}/cert/private_key
+export CACERT=${PWD}/cert
+
+ECS_CLUSTER=
+PUBLIC_IP=
+PRIVATE_IP=
+SRV=
+ZONE=
+
+while [ $# -gt 0 ]; do
+    case ${1} in
+        --cluster)
+            shift 1; ECS_CLUSTER=$1; shift 1 ;;
+        --public-ip)
+            shift 1; PUBLIC_IP=$1; shift 1 ;;
+        --private-ip)
+            shift 1; PRIVATE_IP=$1; shift 1 ;;
+        --srv)
+            shift 1; SRV=$1; shift 1 ;;
+        --zone)
+            shift 1; ZONE=$1; shift 1 ;;
+        *)
+            echo "Refuse to process $@; Unexpected arguments/flag"
+            exit 1 ;;
+    esac
+done
+
+# Configure Docker Engine for remote access
+machine --certpath=${CACERT} tls gen-cert-install --skip-cache=true --host=${PUBLIC_IP} --altname=${PRIVATE_IP}
+
+# Setup Docker Client environment
+export DOCKER_HOST=tcp://${PUBLIC_IP}:2376
+export DOCKER_TLS_VERIFY=1
+export DOCKER_CERT_PATH=${PWD}/cert
+
+# Instruct weave to install router and network plugin
+weave launch $(machine dns lookup-srv ${SRV} ${ZONE})
+
+# Configure target machine to join an ECS cluster
+# See http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-install.html
+docker run --restart=on-failure:10 --net host --name ecs-agent -d \
+    -v /var/log/ecs/:/log \
+    -v /var/lib/ecs/data:/data \
+    -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+    -e DOCKER_HOST=tcp://localhost:12375 \
+    -e ECS_LOGFILE=/log/ecs-agent.log \
+    -e ECS_LOGLEVEL=info \
+    -e ECS_DATADIR=/data \
+    -e ECS_CLUSTER=${ECS_CLUSTER} \
+    amazon/amazon-ecs-agent:latest

@@ -1,0 +1,9 @@
+{
+  "Records": [
+    {
+      "Sns": {
+        "Message": "{\"Event\":\"autoscaling:EC2_INSTANCE_LAUNCH\",\"EC2InstanceId\":\"\"}"
+      }
+    }
+  ]
+}
