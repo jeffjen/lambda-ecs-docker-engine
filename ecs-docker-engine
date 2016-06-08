@@ -13,7 +13,6 @@ PUBLIC_IP=
 PRIVATE_IP=
 SRV=
 ZONE=
-
 while [ $# -gt 0 ]; do
     case ${1} in
         --cluster)
@@ -41,10 +40,15 @@ export DOCKER_TLS_VERIFY=1
 export DOCKER_CERT_PATH=${PWD}/cert
 
 # Instruct weave to install router and network plugin
+weavedb=$(docker ps -a --format '{{ .Names }}' -f name=weavedb)
+if [ -z ${weavedb} ]; then
 weave launch $(machine dns lookup-srv ${SRV} ${ZONE})
+fi
 
 # Configure target machine to join an ECS cluster
 # See http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-install.html
+agent=$(docker ps -a --format '{{ .Names }}' -f name=ecs-agent)
+if [ -z ${agent} ]; then
 docker run --restart=on-failure:10 --net host --name ecs-agent -d \
     -v /var/log/ecs/:/log \
     -v /var/lib/ecs/data:/data \
@@ -55,3 +59,4 @@ docker run --restart=on-failure:10 --net host --name ecs-agent -d \
     -e ECS_DATADIR=/data \
     -e ECS_CLUSTER=${ECS_CLUSTER} \
     amazon/amazon-ecs-agent:latest
+fi

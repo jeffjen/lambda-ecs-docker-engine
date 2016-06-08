@@ -5,6 +5,7 @@ const zip = require("gulp-zip");
 
 const bundle = {
     src: [
+        ".env",
         "cert/**",
         "vendor/**",
         "ecs-docker-engine",
