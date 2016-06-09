@@ -2,7 +2,7 @@
   "Records": [
     {
       "Sns": {
-        "Message": "{\"AutoScalingGroupName\":\"ParseServer\",\"Event\":\"autoscaling:EC2_INSTANCE_LAUNCH\",\"EC2InstanceId\":\"\"}"
+        "Message": "{\"AutoScalingGroupName\":\"\",\"Event\":\"autoscaling:EC2_INSTANCE_LAUNCH\",\"EC2InstanceId\":\"\"}"
       }
     }
   ]
