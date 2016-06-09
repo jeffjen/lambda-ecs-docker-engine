@@ -8,7 +8,7 @@ export MACHINE_USER=ubuntu
 export MACHINE_CERT_FILE=${PWD}/cert/private_key
 export CACERT=${PWD}/cert
 
-ECS_CLUSTER=
+ECS_CLUSTER=default
 PUBLIC_IP=
 PRIVATE_IP=
 SRV=
@@ -25,6 +25,10 @@ while [ $# -gt 0 ]; do
             shift 1; SRV=$1; shift 1 ;;
         --zone)
             shift 1; ZONE=$1; shift 1 ;;
+        help|--help|-h)
+            echo "Command usage:"
+            echo "ecs-docker-engine --cluster [name] --public-ip [hostname] --private-ip [private] --srv [SRV Service] --zone [SRV Zone]"
+            exit 0 ;;
         *)
             echo "Refuse to process $@; Unexpected arguments/flag"
             exit 1 ;;
