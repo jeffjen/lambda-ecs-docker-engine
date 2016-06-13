@@ -38,5 +38,8 @@ cert
 # ignore vendor directory
 vendor
 
+# ignore the runtime dotenv file
+.env
+
 # vim tmp object
 *.sw*
