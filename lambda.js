@@ -67,6 +67,7 @@ module.exports.handle = function (event, context, callback) {
                         PublicIpAddress: inst.PublicIpAddress,
                         PrivateIpAddress: inst.PrivateIpAddress
                     },
+                    ClusterName: clusterName,
                     ContainerSpec: {
                         Bucket: process.env.DEVOPS_BUCKET,
                         Key: path.join(clusterName, process.env.DEVOPS_VERSION || "latest.yml"),
