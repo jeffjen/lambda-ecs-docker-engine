@@ -36,7 +36,7 @@ while [ $# -gt 0 ]; do
 done
 
 # Configure Docker Engine for remote access
-machine --certpath=${CACERT} tls gen-cert-install --skip-cache=true --host=${PUBLIC_IP} --altname=${PRIVATE_IP}
+machine --certpath=${CACERT} --skip-instance-cache=true tls gen-cert-install --host=${PUBLIC_IP} --altname=${PRIVATE_IP}
 
 # Setup Docker Client environment
 export DOCKER_HOST=tcp://${PUBLIC_IP}:2376
