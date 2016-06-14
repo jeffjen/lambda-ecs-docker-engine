@@ -32,11 +32,13 @@ const bundle = {
     }
 };
 
-gulp.task("bundle", ["vendor"], function() {
+gulp.task("bundle-only", function() {
     gulp.src(bundle.src, bundle.opts)
         .pipe(zip(bundle.output))
         .pipe(gulp.dest(bundle.dst));
 });
+
+gulp.task("bundle", ["vendor", "bundle-only"]);
 
 gulp.task("vendor", ["vendor-weave", "vendor-docker"]);
 
