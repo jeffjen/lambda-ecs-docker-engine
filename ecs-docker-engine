@@ -6,6 +6,7 @@ export PATH=${PWD}/vendor:${PATH}
 
 export MACHINE_USER=ubuntu
 export MACHINE_CERT_FILE=${PWD}/cert/private_key
+export MACHINE_SKIP_INSTNACE_CACHE=1
 export CACERT=${PWD}/cert
 
 ECS_CLUSTER=default
