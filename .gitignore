@@ -41,5 +41,8 @@ vendor
 # ignore the runtime dotenv file
 .env
 
+# Ignore dist
+dist
+
 # vim tmp object
 *.sw*
