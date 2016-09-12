@@ -2,15 +2,11 @@
 
 const chmod = require("gulp-chmod");
 const del = require("del");
-const filter = require("gulp-filter");
 const gulp = require("gulp");
-const gunzip = require("gulp-gunzip");
 const lambda = require("gulp-awslambda");
-const rename = require("gulp-rename");
 const request = require("request");
 const shell = require('gulp-shell')
 const source = require("vinyl-source-stream");
-const untar = require("gulp-untar");
 const zip = require("gulp-zip");
 
 const dest = {
@@ -30,12 +26,12 @@ gulp.task("clean", function () {
 });
 
 gulp.task("lambda.cert", function() {
-    return gulp.src(`${process.env.HOME}/.machine/*.pem`).
+    return gulp.src(`${process.env.HOME}/.machine/{ca,key,cert}.pem`).
         pipe(gulp.dest(`${dest.lambda}/cert`));
 });
 
 gulp.task("lambda.vendor.docker", function() {
-    return gulp.src("/usr/bin/docker").
+    return gulp.src("/usr/local/bin/docker").
         pipe(gulp.dest(`${dest.lambda}/vendor`));
 });
 
@@ -63,7 +59,7 @@ gulp.task("lambda.npm", [ "lambda.npm.src" ], shell.task([
 ]));
 
 gulp.task("lambda", [ "lambda.cert", "lambda.vendor", "lambda.npm" ], function() {
-    gulp.src([ `${dest.lambda}/*`, `!${dest.lambda}/app.zip` ]).
+    gulp.src([ `${dest.lambda}/**/*`, `!${dest.lambda}/app.zip` ], { dot: true }).
         pipe(zip("app.zip")).
         pipe(gulp.dest(dest.lambda));
 });
@@ -72,7 +68,7 @@ gulp.task("default", [ "lambda" ]);
 
 gulp.task("deploy", [ "lambda" ], function () {
     let FunctionName = "lambda-ecs-docker-engine";
-    gulp.src([ `${dest.lambda}/*`, `!${dest.lambda}/app.zip` ]).
+    gulp.src([ `${dest.lambda}/**/*`, `!${dest.lambda}/app.zip` ]).
         pipe(zip("app.zip")).
         pipe(lambda(FunctionName, { region: "ap-northeast-1" }));
 });
