@@ -32,17 +32,11 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
-# ignore cert directory
-cert
-
-# ignore vendor directory
-vendor
-
-# ignore the runtime dotenv file
-.env
-
 # Ignore dist
 dist
+
+# Ignore generated content
+config.js
 
 # vim tmp object
 *.sw*

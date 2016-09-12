@@ -15,8 +15,8 @@ const dest = {
 };
 const paths = {
     src: [
-        ".env",
         "package.json",
+        "config.js",
         "lambda.js",
         "ecs-docker-engine",
     ]

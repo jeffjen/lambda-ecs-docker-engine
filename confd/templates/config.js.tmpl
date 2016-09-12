@@ -1,0 +1,9 @@
+"use strict"
+
+module.exports = {
+    SERVICE: "{{ getv "/dns_srv" }}",
+    ZONE: "{{ getv "/dns_srv_zone" }}",
+    DEVOPS_BUCKET: "{{ getv "/bucket" }}",
+    DEVOPS_VERSION: "{{ getv "/version" }}",
+    DEVOPS_WORKER_ARN: "{{ getv "/worker_topic" }}"
+};

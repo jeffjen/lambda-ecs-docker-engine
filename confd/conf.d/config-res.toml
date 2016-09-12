@@ -1,0 +1,10 @@
+[template]
+src = "config.js.tmpl"
+dest = "config.js"
+keys = [
+    "dns_srv",
+    "dns_srv_zone",
+    "bucket",
+    "version",
+    "worker_topic"
+]

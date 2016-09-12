@@ -1,7 +1,5 @@
 "use strict"
 
-require("dotenv").config();
-
 const child_process = require("child_process");
 const path = require("path")
 
@@ -15,6 +13,8 @@ const waitFor = Promise.promisify(ec2.waitFor, { context: ec2 });
 const sns = new AWS.SNS();
 const publish = Promise.promisify(sns.publish, { context: sns });
 
+const config = require("./config");
+
 function configure(clusterName, data) {
     return new Promise(function (ok, grr) {
         // NOTE: one and only one instance
@@ -27,9 +27,9 @@ function configure(clusterName, data) {
             "--private-ip",
             inst.PrivateIpAddress,
             "--srv",
-            process.env.SERVICE,
+            config.SERVICE,
             "--zone",
-            process.env.ZONE
+            config.ZONE
         ];
         const child = child_process.spawn("./ecs-docker-engine", args);
         child.stdout.on("data", (data) => process.stdout.write(`1: ${data}`));
@@ -69,13 +69,13 @@ module.exports.handle = function (event, context, callback) {
                     },
                     ClusterName: clusterName,
                     ContainerSpec: {
-                        Bucket: process.env.DEVOPS_BUCKET,
-                        Key: path.join(clusterName, process.env.DEVOPS_VERSION || "latest.yml"),
+                        Bucket: config.DEVOPS_BUCKET,
+                        Key: path.join(clusterName, config.DEVOPS_VERSION || "latest.yml"),
                     }
                 };
                 const params = {
                     Message: JSON.stringify(message),
-                    TopicArn: process.env.DEVOPS_WORKER_ARN,
+                    TopicArn: config.DEVOPS_WORKER_ARN
                 };
                 return publish(params);
             }).
