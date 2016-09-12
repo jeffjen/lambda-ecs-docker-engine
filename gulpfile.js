@@ -4,6 +4,7 @@ const chmod = require("gulp-chmod");
 const del = require("del");
 const gulp = require("gulp");
 const lambda = require("gulp-awslambda");
+const rename = require("gulp-rename");
 const request = require("request");
 const shell = require('gulp-shell')
 const source = require("vinyl-source-stream");
@@ -25,8 +26,16 @@ gulp.task("clean", function () {
     return del([ dest.lambda ]);
 });
 
-gulp.task("lambda.cert", function() {
-    return gulp.src(`${process.env.HOME}/.machine/{ca,key,cert}.pem`).
+gulp.task("lambda.cert.docker", function() {
+    return gulp.src(`${process.env.HOME}/.machine/{ca,ca-key,key,cert}.pem`).
+        pipe(chmod(644)).
+        pipe(gulp.dest(`${dest.lambda}/cert`));
+});
+
+gulp.task("lambda.cert", [ "lambda.cert.docker" ], function() {
+    return gulp.src(`${process.env.MACHINE_CERT_FILE}`).
+        pipe(rename("private_key")).
+        pipe(chmod(644)).
         pipe(gulp.dest(`${dest.lambda}/cert`));
 });
 
