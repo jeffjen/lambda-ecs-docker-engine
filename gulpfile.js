@@ -1,5 +1,6 @@
 "use strict"
 
+const babel = require("gulp-babel");
 const chmod = require("gulp-chmod");
 const del = require("del");
 const gulp = require("gulp");
@@ -11,15 +12,24 @@ const source = require("vinyl-source-stream");
 const zip = require("gulp-zip");
 
 const dest = {
+    app: "lib",
     lambda: "dist"
 };
 const paths = {
-    src: [
-        "package.json",
-        "config.js",
-        "lambda.js",
-        "ecs-docker-engine",
-    ]
+    app: [
+        "src/**/*"
+    ],
+    lambda: {
+        lib: "lib/**/*",
+        meta: [
+            "package.json",
+            ".npmrc",
+        ],
+        src: [
+            "lambda.js",
+            "config.js"
+        ]
+    }
 };
 
 gulp.task("clean", function () {
@@ -58,8 +68,29 @@ gulp.task("lambda.vendor.weave", function() {
 
 gulp.task("lambda.vendor", [ "lambda.vendor.docker", "lambda.vendor.machine", "lambda.vendor.weave" ]);
 
-gulp.task("lambda.npm.src", function () {
-    return gulp.src(paths.src).
+gulp.task("app", function () {
+    return gulp.src(paths.app).
+        pipe(babel({
+            "presets": [ "es2015" ]
+        })).
+        pipe(gulp.dest(dest.app));
+});
+
+gulp.task("lambda.npm.lib", [ "app" ] , function () {
+    return gulp.src(paths.lambda.lib, { dot: true }).
+        pipe(gulp.dest(dest.lambda + "/lib"));
+});
+
+gulp.task("lambda.npm.meta", function () {
+    return gulp.src(paths.lambda.meta, { dot: true }).
+        pipe(gulp.dest(dest.lambda));
+});
+
+gulp.task("lambda.npm.src", [ "lambda.npm.lib", "lambda.npm.meta" ] , function () {
+    return gulp.src(paths.lambda.src, { dot: true }).
+        pipe(babel({
+            "presets": [ "es2015" ]
+        })).
         pipe(gulp.dest(dest.lambda));
 });
 
